@@ -58,16 +58,10 @@
 			// Start your code here
 
 			console.log(children);
-			//console.log(children.getFirst());
 			console.log(children.getFirst().getPropertyBag());
 
-		    /*last view state*/
-//			var viewSettings = { view: sessionStorage.getItem('lastview'), order: sessionStorage.getItem('lastorder'), size: sessionStorage.getItem('lastsize') };
-			console.log(sessionStorage);
-
-            // init viewSettings
+		    /*init last view state*/
 			if (sessionStorage.getItem('lastview') == null) {
-			    console.log();
 			    sessionStorage.setItem('lastview', 'icons');
 			}
 			if (sessionStorage.getItem('lastorder') == null) { // sort order - ascending or decending
@@ -91,7 +85,7 @@
 			var listContainer = document.createElement("div");
 			listContainer.setAttribute("id", "listContainer");
 
-		    /*show element list - TODO: base on last view*/
+		    /*show element list*/
 			switch (sessionStorage.getItem('lastview')) {
 			    case 'list':
 			        showAsList(listContainer, children);
@@ -134,10 +128,9 @@
 		    /* create list view options - names and thumbnails */
 		    var viewDD = document.createElement("select");
 		    viewDD.setAttribute("id", "viewDD");
-		    viewDD.setAttribute("style", "dispay: inline-box");
+		    viewDD.setAttribute("style", "display: inline-box");
 		    viewDD.setAttribute("class", "menuitem");
 		    viewDD.setAttribute('onchange', 'onChangeListView(this);return false;');
-		    onChangeListView
 		    var option1 = document.createElement("option");
 		    option1.setAttribute("value", "icons");
 		    if (sessionStorage.getItem('lastview') == "icons") {
@@ -160,7 +153,17 @@
 		    var sizeDD = document.createElement("select");
 		    sizeDD.setAttribute("id", "sizeDD");
 		    sizeDD.setAttribute("class", "menuitem");
-		    sizeDD.setAttribute("style", "dispay: inline-block; margin-left: 2px");
+//		    sizeDD.setAttribute("style", "display:inline-block;margin-left: 2px");
+		    switch (sessionStorage.getItem('lastview'))
+		    {
+		        case 'list':
+		            sizeDD.setAttribute("style", "margin-left: 2px;visibility:hidden");
+		            break;
+		        case 'icons':
+		        default:
+		            sizeDD.setAttribute("style", "margin-left: 2px;visibility:visible");
+		    }
+//		    sizeDD.setAttribute("style", "dispay: inline-block; margin-left: 2px");
 		    sizeDD.setAttribute("onchange", "onChangeIconSize(this);return false;");
 		    var sOption1 = document.createElement("option");
 		    sOption1.setAttribute("value", "small");
@@ -199,7 +202,7 @@
         * Sort list by name of items in the direction given (reverse = true/false)
         */
 		function sortListItems(children, reverse) {
-		    console.log("sortListItems()");
+
 		    if (reverse) {
 		        //reverse sort
 		        children._array.sort(function (a, b) {
@@ -219,8 +222,6 @@
         */
 		function showAsThumbnails(container,children)
 		{
-
-		    console.log("showAsThumbnails");
 
 		    children.each(function (child) {
 		        var item = document.createElement("figure");
@@ -289,13 +290,10 @@
         */
 		function onChangeIconSize(select)
 		{
-		    console.log("onChangeIconSize");
 		    var size = select.options[select.selectedIndex].value;
 		    sessionStorage.setItem('lastsize', size);
-		    console.log(size);
 
 		    var pageElement = document.getElementById("page");
-
 		    // Current Tree Node
 		    var node = ExplorerBinding.getFocusedTreeNodeBindings().getFirst().node;
 		    // Get childrens
@@ -319,7 +317,6 @@
         */
 		function onSort(button)
 		    {
-		    console.log("onSort()");
 
 		    var pageElement = document.getElementById("page");
 
@@ -346,8 +343,9 @@
 
             // create view
 		    switch(sessionStorage.getItem('lastview')){
-                case 'icons':
-                    showAsThumbnails(listContainer, children);
+		        case 'icons':
+		            showAsThumbnails(listContainer, children);
+		            break;
 		        case 'list':
 		        default:
 		            showAsList(listContainer, children);
@@ -369,7 +367,6 @@
         * onChangeListView
         */
 		function onChangeListView(select) {
-		    console.log("onChangeListView");
 
 		    var pageElement = document.getElementById("page");
 
@@ -393,11 +390,15 @@
 		    var view = select.options[select.selectedIndex].value;
 		    sessionStorage.setItem('lastview', view);
 
+		    var sizeSelect = document.getElementById('sizeDD');
+
 		    switch (view) {
-		        case 'icons' :
+		        case 'icons':
+		            sizeSelect.setAttribute("style", "margin-left: 2px;visibility:visible");
 		            showAsThumbnails(listContainer, children);
 		            break;
 		        default: // view = 'list'
+		            sizeSelect.setAttribute("style", "margin-left: 2px;visibility:hidden");
 		            showAsList(listContainer, children);
 		    }
 		}
